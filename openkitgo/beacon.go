@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+	"math/rand"
 )
 
 type BeaconSender struct {
@@ -130,6 +131,8 @@ type Beacon struct {
 	beaconConfiguration BeaconConfiguration
 
 	immutableBasicBeaconData string
+
+	deviceID		uint32
 }
 
 func NewBeacon(log *log.Logger, beaconCache *beaconCache, config *Configuration, clientIPAddress string) *Beacon {
@@ -500,4 +503,21 @@ func (b *Beacon) ReportValueAt(parentActionID int, key string, value string, tim
 
 	b.addEventData(timestamp, &sb)
 
+}
+
+/**
+	* Create a device ID.
+	*
+	* @param random Pseudo random number generator.
+	* @param configuration Configuration.
+	*
+	* @return A device ID, which might either be the one set when building OpenKit or a randomly generated one.
+	*/
+func (b *Beacon) createDeviceID() {
+	if b.beaconConfiguration.dataCollectionLevel == 2 {
+		return b.beaconConfiguration.deviceID
+	}
+
+	// no user tracking allowed
+	return rand.Uint32()
 }

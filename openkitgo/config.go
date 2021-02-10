@@ -16,6 +16,10 @@ const DEFAULT_CAPTURE_CRASHES = true
 const DEFAULT_DATA_COLLECTION_LEVEL = 2
 const DEFAULT_CRASH_REPORTING_LEVEL = 2
 
+const DEFAULT_MAX_RECORD_AGE_IN_MILLIS = 6300000 // 1hour and 45 minutes in ms
+const DEFAULT_UPPER_MEMORY_BOUNDARY_IN_BYTES = 100 * 1024 * 1024 // 100MiB
+const DEFAULT_LOWER_MEMORY_BOUNDARY_IN_BYTES = 80 * 1024 * 1024 // 80 MiB
+
 type Configuration struct {
 	openKitType openKitType
 
@@ -40,6 +44,8 @@ type Configuration struct {
 	serverConfigurationSet bool
 
 	lock sync.Mutex
+
+	BeaconCacheConfiguration *BeaconCacheConfiguration
 }
 
 func NewConfiguration(endpointURL string,
@@ -53,7 +59,6 @@ func NewConfiguration(endpointURL string,
 	proxyAddress string,
 	verifyCertificates bool) *Configuration {
 
-	// TODO - Implement BeaconCacheConfiguration
 	// TODO - Implement getTrustManager
 
 	c := new(Configuration)
@@ -83,6 +88,14 @@ func NewConfiguration(endpointURL string,
 		multiplicity:        1,
 		dataCollectionLevel: DEFAULT_DATA_COLLECTION_LEVEL,
 		crashReportingLevel: DEFAULT_CRASH_REPORTING_LEVEL,
+		deviceID:			 deviceID,
+	}
+
+	// TODO - Implement BeaconCacheConfiguration
+	c.BeaconCacheConfiguration = &BeaconCacheConfiguration {
+		maxRecordAge:			DEFAULT_MAX_RECORD_AGE_IN_MILLIS,
+		cacheSizeLowerBound:	DEFAULT_LOWER_MEMORY_BOUNDARY_IN_BYTES,
+		cacheSizeUpperBound:	DEFAULT_UPPER_MEMORY_BOUNDARY_IN_BYTES,
 	}
 
 	c.device = d
@@ -154,7 +167,14 @@ type BeaconConfiguration struct {
 	multiplicity        int
 	dataCollectionLevel int
 	crashReportingLevel int
+	deviceID			uint32
 }
 
 type ServerConfiguration struct {
 }
+
+type BeaconCacheConfiguration struct {
+	maxRecordAge		uint64
+    cacheSizeLowerBound	uint64
+    cacheSizeUpperBound	uint64
+}	
